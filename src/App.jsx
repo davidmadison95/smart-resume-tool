@@ -5,7 +5,7 @@
 
 import React, { useState } from 'react';
 import { FileUpload } from './components/upload/FileUpload';
-import  Button from './components/Button';
+import Button from './components/Button';
 import { useFileUpload } from './hooks/useFileUpload';
 import { useAnalysis } from './hooks/useAnalysis';
 import { APP_CONFIG } from './config/constants';
@@ -18,7 +18,7 @@ function App() {
   const analysis = useAnalysis();
 
   const handleAnalyze = async () => {
-    if (!fileUpload.parsedContent) {
+    if (!fileUpload?.parsedContent) {
       alert('Please upload a resume first');
       return;
     }
@@ -33,15 +33,19 @@ function App() {
         fileUpload.parsedContent.text,
         jobDescription
       );
-      
+
       // Scroll to results after analysis
       setTimeout(() => scrollToElement('results'), 500);
     } catch (error) {
       console.error('Analysis failed:', error);
+      alert('Something went wrong running the analysis. Please try again.');
     }
   };
 
-  const canAnalyze = fileUpload.hasFile && jobDescription.trim().length >= 50 && !analysis.isAnalyzing;
+  const canAnalyze =
+    fileUpload?.hasFile &&
+    jobDescription.trim().length >= 50 &&
+    !analysis?.isAnalyzing;
 
   return (
     <div className="min-h-screen bg-gray-50">
@@ -70,11 +74,15 @@ function App() {
       {/* Hero Section */}
       <section className="bg-gradient-to-br from-gray-50 to-gray-100 py-16">
         <div className="container mx-auto px-4 text-center">
-          <h2 className="text-4xl md:text-5xl font-bold text-gray-900 mb-4 animate-slide-in">
-            Get Your Resume <span className="bg-gradient-to-r from-teal-600 to-cyan-600 bg-clip-text text-transparent">ATS-Ready</span>
+          <h2 className="text-4xl md:text-5xl font-bold text-gray-900 mb-4">
+            Get Your Resume{' '}
+            <span className="bg-gradient-to-r from-teal-600 to-cyan-600 bg-clip-text text-transparent">
+              ATS-Ready
+            </span>
           </h2>
           <p className="text-xl text-gray-600 mb-8 max-w-2xl mx-auto">
-            Powered by Anthropic's Claude AI to optimize your resume for Applicant Tracking Systems
+            Powered by Anthropic&apos;s Claude AI to optimize your resume for
+            Applicant Tracking Systems
           </p>
           <div className="flex flex-wrap justify-center gap-6">
             <FeatureItem text="Real AI Analysis" />
@@ -89,13 +97,13 @@ function App() {
         <div className="max-w-6xl mx-auto">
           {/* Upload Section */}
           <div className="grid lg:grid-cols-2 gap-8 mb-12">
-            <FileUpload 
+            <FileUpload
               onFileUpload={fileUpload.uploadFile}
               isLoading={fileUpload.isLoading}
               error={fileUpload.error}
             />
-            
-            <JobDescriptionInput 
+
+            <JobDescriptionInput
               value={jobDescription}
               onChange={setJobDescription}
               disabled={analysis.isAnalyzing}
@@ -113,33 +121,38 @@ function App() {
             >
               {analysis.isAnalyzing ? 'Analyzing with AI...' : 'Analyze My Resume'}
             </Button>
-            
-            {!analysis.isAIAvailable && (
+
+            {analysis?.isAIAvailable === false && (
               <p className="text-sm text-amber-600 mt-3">
-                ⚠️ AI features unavailable - using traditional analysis only
+                ⚠️ AI features unavailable — using traditional analysis only
               </p>
             )}
           </div>
 
-          {/* Results Section - To be implemented */}
-          {analysis.hasResults && (
+          {/* Results Section */}
+          {analysis?.hasResults && (
             <div id="results" className="animate-fade-in">
               <div className="bg-white rounded-2xl shadow-xl p-8 mb-8">
-                <h3 className="text-2xl font-bold text-gray-900 mb-4">Analysis Results</h3>
+                <h3 className="text-2xl font-bold text-gray-900 mb-4">
+                  Analysis Results
+                </h3>
+
                 <div className="grid md:grid-cols-3 gap-6">
-                  <ScoreCard 
+                  <ScoreCard
                     label="ATS Score"
-                    score={analysis.results.scores.overall}
+                    score={analysis?.results?.scores?.overall ?? 0}
                     color="teal"
                   />
-                  <ScoreCard 
+                  <ScoreCard
                     label="Match Score"
-                    score={analysis.results.scores.keywordMatch}
+                    score={analysis?.results?.scores?.keywordMatch ?? 0}
                     color="green"
                   />
-                  <ScoreCard 
+                  <ScoreCard
                     label="Keywords"
-                    score={`${analysis.results.keywords.matched.length}/${analysis.results.keywords.total}`}
+                    score={`${analysis?.results?.keywords?.matched?.length ?? 0}/${
+                      analysis?.results?.keywords?.total ?? 0
+                    }`}
                     color="blue"
                   />
                 </div>
@@ -152,18 +165,35 @@ function App() {
       {/* Footer */}
       <footer className="bg-gray-900 text-white py-12 mt-20">
         <div className="container mx-auto px-4 text-center">
-          <p className="text-xl font-semibold mb-2">{APP_CONFIG.author.name}</p>
-          <p className="text-gray-400 mb-4">Data Analytics Professional | AI Enthusiast</p>
+          <p className="text-xl font-semibold mb-2">
+            {APP_CONFIG?.author?.name ?? 'SmartResumeTool'}
+          </p>
+          <p className="text-gray-400 mb-4">
+            Data Analytics Professional | AI Enthusiast
+          </p>
           <div className="flex justify-center gap-6">
-            <a href={`mailto:${APP_CONFIG.author.email}`} className="text-teal-400 hover:text-teal-300">
-              Email
-            </a>
-            <a href={APP_CONFIG.author.linkedin} target="_blank" rel="noopener noreferrer" className="text-teal-400 hover:text-teal-300">
-              LinkedIn
-            </a>
+            {APP_CONFIG?.author?.email && (
+              <a
+                href={`mailto:${APP_CONFIG.author.email}`}
+                className="text-teal-400 hover:text-teal-300"
+              >
+                Email
+              </a>
+            )}
+            {APP_CONFIG?.author?.linkedin && (
+              <a
+                href={APP_CONFIG.author.linkedin}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="text-teal-4 00 hover:text-teal-300"
+              >
+                LinkedIn
+              </a>
+            )}
           </div>
           <p className="text-gray-500 text-sm mt-8">
-            © 2024 SmartResumeTool v{APP_CONFIG.version} | Built with React & Claude AI
+            © 2024 SmartResumeTool v{APP_CONFIG?.version ?? '1.0.0'} | Built
+            with React &amp; Claude AI
           </p>
         </div>
       </footer>
@@ -175,8 +205,18 @@ function App() {
 function FeatureItem({ text }) {
   return (
     <div className="flex items-center space-x-2 text-gray-700">
-      <svg className="w-5 h-5 text-green-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M5 13l4 4L19 7" />
+      <svg
+        className="w-5 h-5 text-green-500"
+        fill="none"
+        stroke="currentColor"
+        viewBox="0 0 24 24"
+      >
+        <path
+          strokeLinecap="round"
+          strokeLinejoin="round"
+          strokeWidth="2"
+          d="M5 13l4 4L19 7"
+        />
       </svg>
       <span className="font-medium">{text}</span>
     </div>
@@ -205,10 +245,20 @@ function JobDescriptionInput({ value, onChange, disabled }) {
   );
 }
 
-function ScoreCard({ label, score, color }) {
+function ScoreCard({ label, score, color = 'teal' }) {
+  // Tailwind-safe mapping (no dynamic class names that get purged)
+  const colorClassMap = {
+    teal: 'text-teal-600',
+    green: 'text-green-600',
+    blue: 'text-blue-600',
+    cyan: 'text-cyan-600',
+    gray: 'text-gray-700',
+  };
+  const colorClass = colorClassMap[color] ?? colorClassMap.teal;
+
   return (
     <div className="text-center p-6 bg-gray-50 rounded-xl">
-      <div className="text-4xl font-bold text-${color}-600 mb-2">
+      <div className={`text-4xl font-bold ${colorClass} mb-2`}>
         {typeof score === 'number' ? `${score}%` : score}
       </div>
       <div className="text-sm text-gray-600">{label}</div>
